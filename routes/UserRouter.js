@@ -22,6 +22,8 @@ router.get("/list", async (request, response) => {
 });
 
 router.get("/:id", async (request, response) => {
+    const token = request.cookies;
+    console.log(token);
     try {
         const id = request.params.id;
         const users = await User.find({
