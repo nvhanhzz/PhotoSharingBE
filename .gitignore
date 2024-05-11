@@ -1,2 +1,5 @@
-node_modules
+# Ignore file .env
 .env
+
+# Ignore thư mục node_modules trong dự án Node.js
+node_modules/
