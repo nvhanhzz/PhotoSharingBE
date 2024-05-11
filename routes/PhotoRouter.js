@@ -8,8 +8,8 @@ router.get("/photosOfUser/:id", async (request, response) => {
         const userId = request.params.id;
         const photos = await Photo.find({ user_id: userId });
 
-        if (!photos || photos.length === 0) {
-            return response.status(400).json({ message: "Photos not found" });
+        if (!photos) {
+            return response.json({ message: "Photos not found" });
         }
 
         const updatedPhotos = await Promise.all(photos.map(async (photo) => {
