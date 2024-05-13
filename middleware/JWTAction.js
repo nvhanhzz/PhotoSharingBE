@@ -14,18 +14,26 @@ const verifyToken = (token) => {
 
 const checkUserJwt = (req, res, next) => {
     const cookies = req.cookies;
+    // console.log(1);
 
     if (cookies && cookies.token) {
         const token = cookies.token;
         const decoded = verifyToken(token);
         if (decoded) {
             req.decodedJWT = decoded;
+            // console.log(decoded);
             next();
         } else {
-            return res.json({ "error": "token fail" });
+            return res.status(401).json({ "error": "Token verification failed" });
         }
     } else {
-        return res.json({ "error": "no token" });
+        if (req.path !== '/api/user/jwt') {
+            return res.status(401).json({ "error": "No token provided" });
+        } else {
+            // console.log("xyz", req.path);
+            // return res.status(200).json({ message: "No token but no error" })
+            next();
+        }
     }
 }
 

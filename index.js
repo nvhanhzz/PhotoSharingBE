@@ -23,6 +23,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use((req, res, next) => {
+  console.log(req.path);
   if (req.path.startsWith("/api/auth")) {
     return next();
   }
@@ -32,8 +33,9 @@ app.use((req, res, next) => {
 app.use("/api/user", UserRouter);
 app.use("/api/photo", PhotoRouter);
 app.use("/api/auth", AuthRouter);
+
 app.get("/", (request, response) => {
-  response.send({ message: "Hello from photo-sharing app API!" });
+  response.status(200).send({ message: "Hello from photo-sharing app API!" });
 });
 
 app.listen(8081, () => {

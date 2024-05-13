@@ -2,6 +2,7 @@ const express = require("express");
 const Photo = require("../db/photoModel");
 const User = require("../db/userModel");
 const router = express.Router();
+const upload = require("../config/UploadPhoto");
 
 router.get("/photosOfUser/:id", async (request, response) => {
     try {
@@ -9,7 +10,7 @@ router.get("/photosOfUser/:id", async (request, response) => {
         const photos = await Photo.find({ user_id: userId });
 
         if (!photos) {
-            return response.json({ message: "Photos not found" });
+            return response.status(404).json({ message: "Photos not found" });
         }
 
         const updatedPhotos = await Promise.all(photos.map(async (photo) => {
@@ -40,5 +41,27 @@ router.get("/photosOfUser/:id", async (request, response) => {
         response.status(500).send(error);
     }
 });
+
+router.post("/new", upload.fields([{ name: "img", maxCount: 1 }]), async (req, res) => {
+    // console.log(req.files);
+    try {
+        const user = await User.findOne({
+            email: req.decodedJWT.email
+        });
+        const link_img = req.files['img'][0];
+        const newPhoto = new Photo({
+            file_name: link_img.path,
+            date_time: Date.now(),
+            user_id: user._id,
+            comments: []
+        });
+
+        await newPhoto.save();
+        res.status(200).json({ "message": "upload successfully" });
+    } catch (error) {
+        console.log(error);
+        res.status(500);
+    }
+})
 
 module.exports = router;

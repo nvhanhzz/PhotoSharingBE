@@ -24,14 +24,19 @@ router.get("/list", async (request, response) => {
 
 router.get("/jwt", async (request, response) => {
     try {
-        const user = await User.findOne({
-            username: request.decodedJWT.username
-        });
-        response.status(200).send({
-            _id: user._id,
-            first_name: user.first_name
-        });
+        if ("decodedJWT" in request) {
+            const user = await User.findOne({
+                email: request.decodedJWT.email
+            });
+            response.status(200).send({
+                _id: user._id,
+                first_name: user.first_name
+            });
+        } else {
+            response.status(200).json({ message: "No token but no error" })
+        }
     } catch (error) {
+        console.log(error);
         response.status(500).send(error);
     }
 });
@@ -47,7 +52,8 @@ router.get("/:id", async (request, response) => {
             first_name: user.first_name,
             last_name: user.last_name,
             location: user.location,
-            occupation: user.occupation
+            occupation: user.occupation,
+            description: user.description
         });
     } catch (error) {
         response.status(500).send(error);
