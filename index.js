@@ -7,7 +7,7 @@ const dbConnect = require("./db/dbConnect");
 const UserRouter = require("./routes/UserRouter");
 const PhotoRouter = require("./routes/PhotoRouter");
 const AuthRouter = require("./routes/AuthRouter");
-// const CommentRouter = require("./routes/CommentRouter");
+const CommentRouter = require("./routes/CommentRouter");
 
 const checkUserJwt = require("./middleware/JWTAction");
 
@@ -23,7 +23,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use((req, res, next) => {
-  console.log(req.path);
+  // console.log(req.path);
   if (req.path.startsWith("/api/auth")) {
     return next();
   }
@@ -33,6 +33,7 @@ app.use((req, res, next) => {
 app.use("/api/user", UserRouter);
 app.use("/api/photo", PhotoRouter);
 app.use("/api/auth", AuthRouter);
+app.use("/api/comment", CommentRouter);
 
 app.get("/", (request, response) => {
   response.status(200).send({ message: "Hello from photo-sharing app API!" });

@@ -22,6 +22,7 @@ router.get("/photosOfUser/:id", async (request, response) => {
                     date_time: cmt.date_time,
                     user: {
                         _id: user._id,
+                        first_name: user.first_name,
                         last_name: user.last_name
                     }
                 };
@@ -62,6 +63,45 @@ router.post("/new", upload.fields([{ name: "img", maxCount: 1 }]), async (req, r
         console.log(error);
         res.status(500);
     }
-})
+});
+
+router.get("/:id", async (request, response) => {
+    try {
+        const photoId = request.params.id;
+        // console.log(photoId);
+        const photo = await Photo.findOne({ _id: photoId });
+
+        if (!photo) {
+            return response.status(404).json({ message: "Photos not found" });
+        }
+
+        const updatedComments = await Promise.all(photo.comments.map(async (cmt) => {
+            const UID = cmt.user_id;
+            const user = await User.findById(UID);
+            return {
+                comment: cmt.comment,
+                date_time: cmt.date_time,
+                user: {
+                    _id: user._id,
+                    first_name: user.first_name,
+                    last_name: user.last_name
+                }
+            };
+        }));
+
+        const updatedPhoto = {
+            _id: photo._id,
+            file_name: photo.file_name,
+            date_time: photo.date_time,
+            user_id: photo.user_id,
+            comments: updatedComments
+        };
+
+        response.status(200).json(updatedPhoto);
+    } catch (error) {
+        console.log(error);
+        response.status(500).send(error);
+    }
+});
 
 module.exports = router;
